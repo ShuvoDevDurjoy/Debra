@@ -20,18 +20,14 @@ cmake ..
 make
 ```
 
-### Using Makefile:
+### Build Using Makefile:
 ```
 make
-```
-### Running the Application
-```
-./shuvo
 ```
 
 ## Running the Application
 Once built, you can run the application from the build directory:
 ```
-./video_player
+./shuvo
 ```
 
