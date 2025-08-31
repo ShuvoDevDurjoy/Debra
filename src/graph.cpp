@@ -11,7 +11,7 @@ namespace GraphUtilities
     float DEFAULT_PAN_Y_OFFSET = 0.0f;
     float DEFAULT_PAN_X_OFFSET = 0.0f;
     float MAX_PIXEL_PER_UNIT = 400.0f;
-    float MIN_PIXEL_PER_UNIT = 15.0f;
+    float MIN_PIXEL_PER_UNIT = 20.0f;
     float PIXEL_INCREMENT_STEP = 5.0f;
     float DEFAULT_PAN_INCREMENT_STEP = 1.0f;
     int DEFAULT_STEPS = 10.0f;
@@ -69,9 +69,9 @@ Graph::Graph(float s)
 
     this->unitX = normalizeX(1.0f);
     this->unitY = normalizeY(1.0f);
-    this->speed = s == 0.0f ? 0.1f * 100.0f : s * 100.0f;
-
-    this->cartisanReset = ((steps) / 0.01f) / speed;
+    this->speed = s == 0.0f ? 0.1f * 100.0f : s * 60.0f;
+    
+    this->cartisanReset = 2.01f * ((steps + 2.01f) / 0.01f) / (speed);
     this->radiaReset = ((GraphUtilities::toRadians(360.0f) / GraphUtilities::toRadians(0.01f))) / (speed);
 
     initBox();
@@ -301,8 +301,8 @@ void Graph::draw(int tick)
 
     shader->setVec2("position", scale, scale);
     shader->setVec2("translate", panOffsetX * scale * unitX, panOffsetY * scale * unitY);
-    int ticks = tick % (int)(speed * 2.0f + (speed < 100 ? 100 : speed > 1000 ? 1000 : speed));
-    if(ticks == 0) ticks = 1;
+    // int ticks = tick % (int)(speed * 2.0f + (speed < 100 ? 100 : speed > 1000 ? 1000 : speed));
+    int ticks = (tick % (int)(speed)) + 1.0f;
     for(auto &g: graphs){
         int size = std::min(g.getSize(), g.getRangeSize() * ticks);
         if(g.ANIMATION_MODE == AnimationMode::ONCE && size == g.getSize()){

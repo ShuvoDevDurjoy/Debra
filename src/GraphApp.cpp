@@ -76,7 +76,7 @@ void GraphApp::setCallback()
 
 void GraphApp::mainLoop(Graph *graph)
 {
-    int count = 0;
+    int count = -1;
     double lastTickTime = 0.0;
     const double tickInterval = 0.001; // 100 ms
     while (!glfwWindowShouldClose(window))

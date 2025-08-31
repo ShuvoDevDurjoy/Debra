@@ -16,10 +16,12 @@ void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
     Var v;
     addToVar(v, t...);
     float i;
+    int count = 0;
     for (i = -(steps / 2.0f) - 1.0f; i <= (steps / 2.0f) + 1.0f; i += 0.01f)
     {
         float x = normalizeX(i);
         float y;
+        count++;
         std::visit([&](auto &&fn_inner)
                    {
             using FnType = std::decay_t<decltype(fn_inner)>;
@@ -79,7 +81,8 @@ void Graph::insertVerticesRadians(RadianFunctionTypeVariant fn, float s, float f
         float y = normalizeY(radius * sin(i));
         graph.add({x, y});
     }
-    int radianSteps = (((f * M_PI - s * M_PI) / (step * 1.0f)) / (speed * 1.0f));
+    // int radianSteps = (((f * M_PI - s * M_PI) / (step * 1.0f)) / (speed * 1.0f));
+    int radianSteps = 2 * (((f * M_PI - s * M_PI + 1.0f ) / step ) / speed);
     radianSteps = radianSteps < 1 ? 1 : radianSteps;
     graph.setRangeSize(radianSteps);
     graphs.push_back(graph);
