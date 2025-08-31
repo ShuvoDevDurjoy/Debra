@@ -6,8 +6,6 @@
 template <typename... T>
 void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
 {
-    // functions.push_back(fn);
-    // float centerX = windowWidth / 2.0f;
     float r = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
     float g = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
     float b = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
@@ -15,10 +13,8 @@ void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
     singletonGraph graph;
     graph.setColor(gc);
     graph.setAnimationMode(Graph::ANIMATION_MODE);
-    // graphColors.push_back({r, g, b});
     Var v;
     addToVar(v, t...);
-    // std::cout<<"steps: "<<((steps / 2.0f) + 1.0f) / 0.01<<std::endl;
     float i;
     for (i = -(steps / 2.0f) - 1.0f; i <= (steps / 2.0f) + 1.0f; i += 0.01f)
     {
@@ -40,22 +36,15 @@ void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
                 static_assert(false, "Function must be callable with float or (float, Var)");
             } }, fn);
         y = normalizeY(y);
-        // vertices.push_back(x);
-        // vertices.push_back(y);
         graph.add({x, y});
-        // g.add({x, y});
     }
     graph.setRangeSize(cartisanReset);
     graphs.push_back(graph);
-    // std::cout<<i<<std::endl;
-    // int laterSize = vertices.size();
-    // verticesSizes.push_back(laterSize);
 }
 
 template <typename... T>
 void Graph::insertVerticesRadians(RadianFunctionTypeVariant fn, float s, float f, T... t)
 {
-    // functionsRadians.push_back(fn);
     float r = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
     float g = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
     float b = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
@@ -88,12 +77,8 @@ void Graph::insertVerticesRadians(RadianFunctionTypeVariant fn, float s, float f
 
         float x = normalizeX(radius * cos(i));
         float y = normalizeY(radius * sin(i));
-        // verticesRadians.push_back(x);
-        // verticesRadians.push_back(y);
         graph.add({x, y});
     }
-    // verticeSizeRadians.push_back(verticesRadians.size());
-    // verticesRadianTicks.push_back(radianSteps);
     int radianSteps = (((f * M_PI - s * M_PI) / (step * 1.0f)) / (speed * 1.0f));
     radianSteps = radianSteps < 1 ? 1 : radianSteps;
     graph.setRangeSize(radianSteps);
@@ -121,8 +106,6 @@ void Graph::insertVerticesRadiansList(RadianFunctionList fns, float minRange, fl
 template <typename... T>
 void Graph::insertVerticesParametric(ParametricFunctionTypeVariant fn, float minRange, float maxRange, T... t)
 {
-    // functionParametric.push_back({fn, minRange, maxRange});
-
     float r = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
     float g = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
     float b = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
