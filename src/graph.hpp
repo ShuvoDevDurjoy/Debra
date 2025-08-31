@@ -154,12 +154,20 @@ public:
     }
 };
 
+enum AnimationMode{
+    ONCE = 0, 
+    INFINITE = 1, 
+    TIMES = 2
+};
+
 struct singletonGraph
 {
 private:
     GraphColor *color;
     std::vector<float> points;
     int rangeSize;
+public:
+    AnimationMode ANIMATION_MODE = AnimationMode::INFINITE;
 
 private:
     friend class Graph;
@@ -190,6 +198,10 @@ public:
     void add(std::pair<float,float> p){
         points.push_back(p.first);
         points.push_back(p.second);
+    }
+
+    void setAnimationMode(AnimationMode M){
+        this->ANIMATION_MODE = M;
     }
 
 };
@@ -248,6 +260,8 @@ private:
     float yratio = GraphUtilities::DEFAULT_YRATIO;
     int steps;
 
+    AnimationMode ANIMATION_MODE = AnimationMode::INFINITE;
+
     friend class GraphApp;
 
 private:
@@ -298,6 +312,10 @@ public:
     void insertVerticesParametric(ParametricFunctionTypeVariant, float = 0.0f, float = 4.0f, T...);
     template <typename... T>
     void insertVerticesParametricList(ParametricFunctionList, float = 0.0f, float = 4.0f, T...);
+
+    void setAnimationMode(AnimationMode M){
+        ANIMATION_MODE = M;
+    }
 
     void run();
 };

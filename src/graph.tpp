@@ -14,6 +14,7 @@ void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
     GraphColor *gc = new GraphColor(r, g, b);
     singletonGraph graph;
     graph.setColor(gc);
+    graph.setAnimationMode(Graph::ANIMATION_MODE);
     // graphColors.push_back({r, g, b});
     Var v;
     addToVar(v, t...);
@@ -61,6 +62,7 @@ void Graph::insertVerticesRadians(RadianFunctionTypeVariant fn, float s, float f
     GraphColor *gc = new GraphColor(r, g, b);
     singletonGraph graph;
     graph.setColor(gc);
+    graph.setAnimationMode(Graph::ANIMATION_MODE);
     Var v;
     addToVar(v, t...);
     float step = GraphUtilities::toRadians(0.010f);
@@ -127,6 +129,7 @@ void Graph::insertVerticesParametric(ParametricFunctionTypeVariant fn, float min
     GraphColor *gc = new GraphColor(r, g, b);
     singletonGraph graph;
     graph.setColor(gc);
+    graph.setAnimationMode(Graph::ANIMATION_MODE);
     Var v;
     addToVar(v, t...);
 

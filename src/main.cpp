@@ -80,7 +80,7 @@ float fn(float x)
 
 int main()
 {
-    Graph *graph = Graph::getInstance(5.0f);
+    Graph *graph = Graph::getInstance(1.0f);
     // Graph *graph2 = Graph::getInstance(4.0f);
     // graph->speed = 200;
     // Graph *graph2 = Graph::getInstance();
@@ -96,42 +96,45 @@ int main()
     // CartesianFunctionList t{line2, line3};
     // graph->insertVertices(roseCurve);
 
-    // graph->insertVertices([](float x){return x * x;});
+    graph->setAnimationMode(AnimationMode::ONCE);
+    graph->insertVertices([](float x){return x * x;});
     // graph->insertVertices([](float x){return 15.0f;});
     // graph->insertVertices([](float x){return -15.0f;});
+    graph->setAnimationMode(AnimationMode::INFINITE);
     graph->insertVertices([](float x){return Functions::sineModulated(x);});
     // graph->insertVertices([](float x){return x * x * x;});
     // graph->insertVertices([](float x){return cos(x);});
     // graph->insertVertices([](float x){return 1.0f / (3.0f * tan(x));});
     // graph->insertVertices([](float x){return tan(x);});
-
+    
     // Functions to draw in Radia Coordinate System
     //  graph->insertVerticesRadians([](float r){return 9.0f;});
     // for (float a = 10.0f; a <= 70.0f; a+= 10.0f){
-    // }
-    // graph->insertVerticesRadians(para3, 0.0f, 10.0f, 10.0f, 13.0f);
-    // graph->insertVerticesRadians(para3, 0.0f, 20.0f, 20.0f, 13.0f);
-    // graph->insertVerticesRadians(para3, 0.0f, 30.0f, 30.0f, 13.0f);
-    // graph->insertVerticesRadians(para3, 0.0f, 40.0f, 40.0f, 13.0f);
-    // graph->insertVerticesRadians(para3, 0.0f, 50.0f, 50.0f, 13.0f);
-    // graph->insertVerticesRadians(para3, 0.0f, 60.0f, 60.0f, 13.0f);
-    // graph->insertVerticesRadians(para3, 0.0f, 70.0f, 70.0f, 13.0f);
-    // graph->insertVerticesParametric(para, -25.0f, 25.0f);
-    // RadianFunctionList rt{cardroid, cardroid2, cardroid3, cardroid4};
-    // float a = 30.0f;
-    // graph->insertVerticesRadiansList(rt);
-    // graph->insertVertices({Functions::explodedTrigFusion2});
-    // graph->insertVerticesRadians(para3, 0.0f, a, a, 13.0f);
-    // graph->insertVerticesParametric(Functions::maurerRose, 0.0f, 2.0f, 10.0f, 14.0f);
-    // graph->insertVerticesRadians([](float x){ return 14.0f; });
-
-    // Functions to draw in Parametric Coordinate System
-    //  graph->insertVerticesParametric(sunflowerPoint, 0.0f, 350.0f);
-    //  graph->insertVerticesParametric(sunflowerPoint, 0.0f, 1.0f);
-    //  graph->insertVerticesParametric(Functions::heartCurve, 0.0f, 2.0f);
-    //  graph->insertVerticesParametric({Functions::hypotrochoid}, 0.0f, 6.0f);
-    //  graph->insertVerticesParametric(Functions::riemannProjection, 0.0f, 10.0f);
-     graph->insertVerticesRadians(Functions::graphButterfly, 0.0f, 2.0f, -4.0f);
+        // }
+        // graph->insertVerticesRadians(para3, 0.0f, 10.0f, 10.0f, 13.0f);
+        // graph->insertVerticesRadians(para3, 0.0f, 20.0f, 20.0f, 13.0f);
+        // graph->insertVerticesRadians(para3, 0.0f, 30.0f, 30.0f, 13.0f);
+        // graph->insertVerticesRadians(para3, 0.0f, 40.0f, 40.0f, 13.0f);
+        // graph->insertVerticesRadians(para3, 0.0f, 50.0f, 50.0f, 13.0f);
+        // graph->insertVerticesRadians(para3, 0.0f, 60.0f, 60.0f, 13.0f);
+        // graph->insertVerticesRadians(para3, 0.0f, 70.0f, 70.0f, 13.0f);
+        // graph->insertVerticesParametric(para, -25.0f, 25.0f);
+        // RadianFunctionList rt{cardroid, cardroid2, cardroid3, cardroid4};
+        // float a = 30.0f;
+        // graph->insertVerticesRadiansList(rt);
+        // graph->insertVertices({Functions::explodedTrigFusion2});
+        // graph->insertVerticesRadians(para3, 0.0f, a, a, 13.0f);
+        // graph->insertVerticesParametric(Functions::maurerRose, 0.0f, 2.0f, 10.0f, 14.0f);
+        // graph->insertVerticesRadians([](float x){ return 14.0f; });
+        
+        // Functions to draw in Parametric Coordinate System
+        //  graph->insertVerticesParametric(sunflowerPoint, 0.0f, 350.0f);
+        //  graph->insertVerticesParametric(sunflowerPoint, 0.0f, 1.0f);
+        //  graph->insertVerticesParametric(Functions::heartCurve, 0.0f, 2.0f);
+        //  graph->insertVerticesParametric({Functions::hypotrochoid}, 0.0f, 6.0f);
+        //  graph->insertVerticesParametric(Functions::riemannProjection, 0.0f, 10.0f);
+    graph->setAnimationMode(AnimationMode::ONCE);
+    graph->insertVerticesRadians(Functions::graphButterfly, 0.0f, 2.0f, -4.0f);
     //  graph->insertVerticesParametric(Functions::harmonograph, 0.0f, 4.0f);
     // graph->insertVerticesParametric(Functions::lissajous, 0.0f, 2.0f);
 

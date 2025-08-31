@@ -11,7 +11,7 @@ namespace GraphUtilities
     float DEFAULT_PAN_Y_OFFSET = 0.0f;
     float DEFAULT_PAN_X_OFFSET = 0.0f;
     float MAX_PIXEL_PER_UNIT = 400.0f;
-    float MIN_PIXEL_PER_UNIT = 40.0f;
+    float MIN_PIXEL_PER_UNIT = 15.0f;
     float PIXEL_INCREMENT_STEP = 5.0f;
     float DEFAULT_PAN_INCREMENT_STEP = 1.0f;
     int DEFAULT_STEPS = 10.0f;
@@ -302,8 +302,12 @@ void Graph::draw(int tick)
     shader->setVec2("position", scale, scale);
     shader->setVec2("translate", panOffsetX * scale * unitX, panOffsetY * scale * unitY);
     int ticks = tick % (int)(speed * 2.0f + (speed < 100 ? 100 : speed > 1000 ? 1000 : speed));
+    if(ticks == 0) ticks = 1;
     for(auto &g: graphs){
         int size = std::min(g.getSize(), g.getRangeSize() * ticks);
+        if(g.ANIMATION_MODE == AnimationMode::ONCE && size == g.getSize()){
+            g.setRangeSize(g.getSize());
+        }
         app->refreshOpenGL(g.points, 0, size);
         glLineWidth(2.5f);
         GraphColor *c = g.getColor();
