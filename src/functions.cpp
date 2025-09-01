@@ -6,7 +6,7 @@ class Functions
 public:
     static float sineModulated(float x)
     {
-        return GraphUtilities::genSin(x * 5.0f) * exp(-1.0f * pow(x, 2.0f));
+        return 15.0f * GraphUtilities::genSin(x * 5.0f) * exp(-1.0f * pow(x, 2.0f));
         // return GraphUtilities::genSin(x);
     }
     static float tangentInversion(float x)
@@ -77,9 +77,9 @@ public:
         return {x * 0.5f, y * 0.5f};
     }
 
-    static std::pair<float, float> maurerRose(float t)
+    static std::pair<float, float> maurerRose(float t, Var v)
     {
-        float k = 7.0f; // petal factor
+        float k = v[0]; // petal factor
         float r = sin(k * t);
         float x = r * cos(t);
         float y = r * sin(t);
@@ -101,11 +101,11 @@ public:
         return {x, y};
     }
 
-    static std::pair<float, float> heartCurve(float t)
+    static std::pair<float, float> heartCurve(float t, Var v)
     {
         float x = 16 * pow(sin(t), 3);
         float y = 13 * cos(t) - 5 * cos(2 * t) - 2 * cos(3 * t) - cos(4 * t);
-        return {x * 0.15f, y * 0.15f};
+        return {x * v[0], y * v[0]};
     }
 
     static std::pair<float, float> lissajous(float t)
@@ -183,9 +183,9 @@ public:
         return tan(x);
     }
 
-    static float graphButterfly(float x)
+    static float graphButterfly(float x, Var v)
     {
-        float y = (exp(sin(x)) - 2.0f * cos(4.0f * x) + pow(sin(x / 12.0f), 5.0f)) * 1.5f;
+        float y = (exp(sin(x)) - 2.0f * cos(4.0f * x) + pow(sin(x / 12.0f), 5.0f)) * v[0];
         return y;
     }
 

@@ -159,6 +159,7 @@ void Graph::onKeyPressedOnceCallback(const KeyEvent &event)
     switch (event.key)
     {
     case GLFW_KEY_HOME:
+        scale = 1.0f;
         panOffsetX = GraphUtilities::DEFAULT_PAN_X_OFFSET;
         panOffsetY = GraphUtilities::DEFAULT_PAN_Y_OFFSET;
         pixel_per_unit = GraphUtilities::DEFAULT_PIXEL_PER_UNIT;
@@ -301,12 +302,27 @@ void Graph::draw(int tick)
 
     shader->setVec2("position", scale, scale);
     shader->setVec2("translate", panOffsetX * scale * unitX, panOffsetY * scale * unitY);
-    // int ticks = tick % (int)(speed * 2.0f + (speed < 100 ? 100 : speed > 1000 ? 1000 : speed));
-    int ticks = (tick % (int)(speed)) + 1.0f;
     for(auto &g: graphs){
-        int size = std::min(g.getSize(), g.getRangeSize() * ticks);
-        if(g.ANIMATION_MODE == AnimationMode::ONCE && size == g.getSize()){
-            g.setRangeSize(g.getSize());
+        if(tick < g.getStartTime())
+            continue;
+        int tt = (tick - g.getStartTime()) % (int)(g.getDuration() + g.getDelay()) + 1;
+        int size = std::min(g.getSize(), g.getRangeSize() * tt);
+        if(size == g.getSize()){
+            if(tick - g.getStartTime() - g.getDuration() + 1 == g.getDelay())
+            {
+                if (g.ANIMATION_MODE == AnimationMode::ONCE_AND_REMOVE)
+                {
+                    g.setRangeSize(0);
+                }
+                else if (g.ANIMATION_MODE == AnimationMode::ONCE_AND_LOOP_BACK)
+                {
+                    g.StartTime((tick + g.getLoopTime() + 1) / 60.0f);
+                }
+                else if(g.ANIMATION_MODE == AnimationMode::ONCE){
+                    g.setRangeSize(g.getSize());
+                }
+                
+            }
         }
         app->refreshOpenGL(g.points, 0, size);
         glLineWidth(2.5f);

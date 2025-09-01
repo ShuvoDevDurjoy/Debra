@@ -88,22 +88,24 @@ int main()
     //**************************************Logic to Draw Functions Starts Here**********************************************/
 
     // Functions to draw in Cartisian Coordinate System
-    // graph->insertVerticesParametric(Functions::chaoticFractal, 0.0f, 5.0f, 8.0f);
     // graph->insertVerticesRadians(para3, 0.0f, 30.0f, 30.0f, 13.0f);
     // graph->insertVertices(fn, 2.0f);
     // graph->insertVertices({TO_CARTISAN_VARIANT(line2), TO_CARTISAN_VARIANT(line3)});
 
     // CartesianFunctionList t{line2, line3};
-    // graph->insertVertices(roseCurve);
-
-    graph->setAnimationMode(AnimationMode::ONCE);
-    graph->insertVertices([](float x){return x * x;});
+    
     // graph->insertVertices([](float x){return 15.0f;});
     // graph->insertVertices([](float x){return -15.0f;});
-    graph->setAnimationMode(AnimationMode::INFINITE);
+    graph->setAnimationMode(AnimationMode::ONCE_AND_LOOP_BACK);
+    graph->StartTime(0.0f);
+    graph->Duration(5.0f);
+    graph->Delay(2.0f);
+    graph->LoopTime(49.0f);
     graph->insertVertices([](float x){return Functions::sineModulated(x);});
+    // graph->setAnimationMode(AnimationMode::ONCE_AND_REMOVE);
     // graph->insertVertices([](float x){return x * x * x;});
-    // graph->insertVertices([](float x){return cos(x);});
+    graph->StartTime(7.0f);
+    graph->insertVertices([](float x){return cos(x);});
     // graph->insertVertices([](float x){return 1.0f / (3.0f * tan(x));});
     // graph->insertVertices([](float x){return tan(x);});
     
@@ -113,34 +115,45 @@ int main()
         // }
         // graph->insertVerticesRadians(para3, 0.0f, 10.0f, 10.0f, 13.0f);
         // graph->insertVerticesRadians(para3, 0.0f, 20.0f, 20.0f, 13.0f);
-        // graph->insertVerticesRadians(para3, 0.0f, 30.0f, 30.0f, 13.0f);
+        graph->StartTime(14.0f);
+        graph->insertVerticesRadians(para3, 0.0f, 30.0f, 30.0f, 13.0f);
         // graph->insertVerticesRadians(para3, 0.0f, 40.0f, 40.0f, 13.0f);
         // graph->insertVerticesRadians(para3, 0.0f, 50.0f, 50.0f, 13.0f);
         // graph->insertVerticesRadians(para3, 0.0f, 60.0f, 60.0f, 13.0f);
         // graph->insertVerticesRadians(para3, 0.0f, 70.0f, 70.0f, 13.0f);
         // graph->insertVerticesParametric(para, -25.0f, 25.0f);
-        // RadianFunctionList rt{cardroid, cardroid2, cardroid3, cardroid4};
+        // graph->StartTime(10.0f);
+        RadianFunctionList rt{cardroid, cardroid2, cardroid3, cardroid4};
         // float a = 30.0f;
-        // graph->insertVerticesRadiansList(rt);
-        // graph->insertVertices({Functions::explodedTrigFusion2});
+        graph->StartTime(21.0f);
+        graph->insertVerticesRadiansList(rt);
+        graph->StartTime(28.0f);
+        graph->insertVertices({Functions::explodedTrigFusion2});
         // graph->insertVerticesRadians(para3, 0.0f, a, a, 13.0f);
+        graph->StartTime(35.0f);
+        // graph->insertVerticesParametric(Functions::chaoticFractal, 0.0f, 5.0f, 8.0f);
+        // graph->insertVertices(roseCurve);
         // graph->insertVerticesParametric(Functions::maurerRose, 0.0f, 2.0f, 10.0f, 14.0f);
         // graph->insertVerticesRadians([](float x){ return 14.0f; });
         
         // Functions to draw in Parametric Coordinate System
-        //  graph->insertVerticesParametric(sunflowerPoint, 0.0f, 350.0f);
+         graph->insertVerticesParametric(sunflowerPoint, 0.0f, 350.0f);
         //  graph->insertVerticesParametric(sunflowerPoint, 0.0f, 1.0f);
-        //  graph->insertVerticesParametric(Functions::heartCurve, 0.0f, 2.0f);
+        graph->StartTime(42.0f);
+         graph->insertVerticesParametric(Functions::heartCurve, 0.0f, 2.0f, 0.8f);
         //  graph->insertVerticesParametric({Functions::hypotrochoid}, 0.0f, 6.0f);
         //  graph->insertVerticesParametric(Functions::riemannProjection, 0.0f, 10.0f);
-    graph->setAnimationMode(AnimationMode::ONCE);
-    graph->insertVerticesRadians(Functions::graphButterfly, 0.0f, 2.0f, -4.0f);
-    //  graph->insertVerticesParametric(Functions::harmonograph, 0.0f, 4.0f);
-    // graph->insertVerticesParametric(Functions::lissajous, 0.0f, 2.0f);
+        graph->setAnimationMode(AnimationMode::ONCE_AND_REMOVE);
+        graph->StartTime(49.0f);
+        graph->Duration(5.0f);
+        // graph->Delay(2.0f);
+        graph->insertVerticesRadians(Functions::graphButterfly, 0.0f, 2.0f, -4.0f);
+        //  graph->insertVerticesParametric(Functions::harmonograph, 0.0f, 4.0f);
+        // graph->insertVerticesParametric(Functions::lissajous, 0.0f, 2.0f);
 
-    //***************************************Logic to draw Functions Ends Here*************************************************/
+        //***************************************Logic to draw Functions Ends Here*************************************************/
 
-    graph->run();
+        graph->run();
 
-    return 0;
+        return 0;
 }

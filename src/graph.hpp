@@ -145,7 +145,11 @@ public:
     float BLUE;
 
 public:
-    GraphColor(){}
+    GraphColor(){
+        this->RED = 0.2f + static_cast<float>(rand()) / (RAND_MAX * 1.0f);
+        this->GREEN = 0.2f + static_cast<float>(rand()) / (RAND_MAX * 1.0f);
+        this->BLUE = 0.2f + static_cast<float>(rand()) / (RAND_MAX * 1.0f);
+    }
     GraphColor(float RED, float GREEN, float BLUE)
     {
         this->RED = RED;
@@ -157,7 +161,8 @@ public:
 enum AnimationMode{
     ONCE = 0, 
     INFINITE = 1, 
-    TIMES = 2
+    ONCE_AND_REMOVE = 2, 
+    ONCE_AND_LOOP_BACK = 3
 };
 
 struct singletonGraph
@@ -166,6 +171,11 @@ private:
     GraphColor *color;
     std::vector<float> points;
     int rangeSize;
+    int startTime = 0;
+    int duration = 60;
+    int delay = 60;
+    int loopTime = 60;
+
 public:
     AnimationMode ANIMATION_MODE = AnimationMode::INFINITE;
 
@@ -174,6 +184,12 @@ private:
 
 public:
     singletonGraph() {}
+    singletonGraph(int startTime, int duration, int delay, int loopTime){
+        this->startTime = startTime;
+        this->duration = duration;
+        this->delay = delay;
+        this->loopTime = loopTime;
+    }
     int getSize()
     {
         return points.size();
@@ -204,6 +220,26 @@ public:
         this->ANIMATION_MODE = M;
     }
 
+    void StartTime(float startTime)
+    {
+        int start = (startTime * 60.0f) < 0 ? 0 : (startTime * 60.0f);
+        this->startTime = start;
+    }
+    void Duration(float duration)
+    {
+        int d = (duration * 60.0f) < 60 ? 60 : (duration * 60.0f);
+        this->duration = d;
+    }
+    void Delay(float delay)
+    {
+        int d = (delay * 60.0f) < 60.0f ? 60 : (delay * 60.0f);
+        this->delay = d;
+    }
+
+    int getStartTime() { return this->startTime; }
+    int getDuration() { return this->duration; }
+    int getDelay() { return this->delay; }
+    int getLoopTime() { return this->loopTime; }
 };
 
 class Graph : public KeyClicked
@@ -260,6 +296,8 @@ private:
     float yratio = GraphUtilities::DEFAULT_YRATIO;
     int steps;
 
+    int startTime = 0, duration = 60, delay = 60, loopTime = 60;
+
     AnimationMode ANIMATION_MODE = AnimationMode::INFINITE;
 
     friend class GraphApp;
@@ -294,6 +332,11 @@ private:
 
     void initBox();
 
+    int getStart() { return this->startTime; }
+    int getDuration() { return this->duration; }
+    int getDelay() { return this->delay; }
+    int getLoopTime() { return this->loopTime; }
+
 public:
     // --- Singleton Access Point ---
     ~Graph() {};
@@ -318,6 +361,24 @@ public:
     }
 
     void run();
+
+public:
+    void StartTime(float startTime) {
+        int start = (startTime * 60.0f) < 0 ? 0 : (startTime * 60.0f);
+        this->startTime = start; 
+    }
+    void Duration(float duration){
+        int d = (duration * 60.0f) < 60 ? 60 : (duration * 60.0f);
+        this->duration = d;
+    }
+    void Delay(float delay){
+        int d = (delay * 60.0f) < 60.0f ? 60 : (delay * 60.0f);
+        this->delay = d;
+    }
+    void LoopTime(float loopTime){
+        int lt = (loopTime * 60.0f) < 0.0f ? 0 : (loopTime * 60.0f);
+        this->loopTime = lt;
+    }
 };
 #include "graph.tpp"
 

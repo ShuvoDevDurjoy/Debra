@@ -6,11 +6,8 @@
 template <typename... T>
 void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
 {
-    float r = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
-    float g = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
-    float b = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
-    GraphColor *gc = new GraphColor(r, g, b);
-    singletonGraph graph;
+    GraphColor *gc = new GraphColor();
+    singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime());
     graph.setColor(gc);
     graph.setAnimationMode(Graph::ANIMATION_MODE);
     Var v;
@@ -40,18 +37,16 @@ void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
         y = normalizeY(y);
         graph.add({x, y});
     }
-    graph.setRangeSize(cartisanReset);
+    int cr = 2.01f * ((steps + 2.01f) / 0.01f) / getDuration();
+    graph.setRangeSize(cr);
     graphs.push_back(graph);
 }
 
 template <typename... T>
 void Graph::insertVerticesRadians(RadianFunctionTypeVariant fn, float s, float f, T... t)
 {
-    float r = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
-    float g = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
-    float b = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
-    GraphColor *gc = new GraphColor(r, g, b);
-    singletonGraph graph;
+    GraphColor *gc = new GraphColor();
+    singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime());
     graph.setColor(gc);
     graph.setAnimationMode(Graph::ANIMATION_MODE);
     Var v;
@@ -81,8 +76,7 @@ void Graph::insertVerticesRadians(RadianFunctionTypeVariant fn, float s, float f
         float y = normalizeY(radius * sin(i));
         graph.add({x, y});
     }
-    // int radianSteps = (((f * M_PI - s * M_PI) / (step * 1.0f)) / (speed * 1.0f));
-    int radianSteps = 2 * (((f * M_PI - s * M_PI + 1.0f ) / step ) / speed);
+    int radianSteps = 2 * (((f * M_PI - s * M_PI + 1.0f ) / step ) / getDuration());
     radianSteps = radianSteps < 1 ? 1 : radianSteps;
     graph.setRangeSize(radianSteps);
     graphs.push_back(graph);
@@ -109,11 +103,8 @@ void Graph::insertVerticesRadiansList(RadianFunctionList fns, float minRange, fl
 template <typename... T>
 void Graph::insertVerticesParametric(ParametricFunctionTypeVariant fn, float minRange, float maxRange, T... t)
 {
-    float r = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
-    float g = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
-    float b = 0.2f + static_cast<float>(rand()) / RAND_MAX * 1.0f;
-    GraphColor *gc = new GraphColor(r, g, b);
-    singletonGraph graph;
+    GraphColor *gc = new GraphColor();
+    singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime());
     graph.setColor(gc);
     graph.setAnimationMode(Graph::ANIMATION_MODE);
     Var v;
@@ -143,7 +134,7 @@ void Graph::insertVerticesParametric(ParametricFunctionTypeVariant fn, float min
         graph.add({x, y});
     }
 
-    int parametricSteps = (((maxRange * M_PI - minRange * M_PI) / (step * 1.0f)) / (speed * 1.0f));
+    int parametricSteps = 2.0f * (((maxRange * M_PI - minRange * M_PI + 1.0f) / step ) / (getDuration()));
     parametricSteps = parametricSteps < 1 ? 1 : parametricSteps;
     graph.setRangeSize(parametricSteps);
     graphs.push_back(graph);
