@@ -69,8 +69,8 @@ Graph::Graph(float s)
 
     this->unitX = normalizeX(1.0f);
     this->unitY = normalizeY(1.0f);
-    this->speed = s == 0.0f ? 0.1f * 100.0f : s * 60.0f;
-    
+    this->speed = s <= 0.0f ? 0 : s * 60.0f;
+
     this->cartisanReset = 2.01f * ((steps + 2.01f) / 0.01f) / (speed);
     this->radiaReset = ((GraphUtilities::toRadians(360.0f) / GraphUtilities::toRadians(0.01f))) / (speed);
 
@@ -90,12 +90,12 @@ void Graph::initBox()
 {
     boxVerticess.setColor(new GraphColor(0.40f, 0.40f, 0.70f));
     boxVerticess.add({-0.997f, -0.997f});
-    boxVerticess.add({ 0.997f, -0.997f});
-    boxVerticess.add({ 0.997f, -0.997f});
-    boxVerticess.add({ 0.997f,  0.997f});
-    boxVerticess.add({ 0.997f,  0.997f});
-    boxVerticess.add({-0.997f,  0.997f});
-    boxVerticess.add({-0.997f,  0.997f});
+    boxVerticess.add({0.997f, -0.997f});
+    boxVerticess.add({0.997f, -0.997f});
+    boxVerticess.add({0.997f, 0.997f});
+    boxVerticess.add({0.997f, 0.997f});
+    boxVerticess.add({-0.997f, 0.997f});
+    boxVerticess.add({-0.997f, 0.997f});
     boxVerticess.add({-0.997f, -0.997f});
     boxVerticess.setRangeSize(boxVerticess.getSize());
 }
@@ -226,7 +226,7 @@ void Graph::generateGrid()
     float stepy = windowHeight / GraphUtilities::MIN_PIXEL_PER_UNIT;
     for (int y = -stepy / 2; y <= stepy / 2; y += 1)
     {
-        gridLines.add({-1.0f,normalizeY(y)});
+        gridLines.add({-1.0f, normalizeY(y)});
         gridLines.add({1.0f, normalizeY(y)});
     }
     gridLines.setRangeSize(gridLines.getSize());
@@ -302,40 +302,132 @@ void Graph::draw(int tick)
 
     shader->setVec2("position", scale, scale);
     shader->setVec2("translate", panOffsetX * scale * unitX, panOffsetY * scale * unitY);
-    for(auto &g: graphs){
-        if(tick < g.getStartTime())
+    // for(auto &g: graphs){
+    //     if(tick < g.getStartTime())
+    //         continue;
+    //     int tt = (tick - g.getStartTime()) % (int)(g.getDuration() + g.getDelay()) + 1;
+    //     float alpha = std::clamp((float)(tick - g.getStartTime()) / g.getDuration(), 0.0f, 1.0f);
+    //     int size = std::min(g.getSize(), g.getRangeSize() * tt);
+    //     std::vector<float> drawPoints;
+    //     drawPoints.reserve(size);
+    //     if(size == g.getSize()){
+    //         if(tick - g.getStartTime() - g.getDuration() + 1 == g.getDelay())
+    //         {
+    //             if (g.ANIMATION_MODE == AnimationMode::ONCE_AND_REMOVE)
+    //             {
+    //                 g.setRangeSize(0);
+    //             }
+    //             else if (g.ANIMATION_MODE == AnimationMode::ONCE_AND_LOOP_BACK)
+    //             {
+    //                 g.StartTime((tick + g.getLoopTime() + 1) / 60.0f);
+    //             }
+    //             else if(g.ANIMATION_MODE == AnimationMode::ONCE){
+    //                 g.setRangeSize(g.getSize());
+    //             }
+
+    //         }
+    //     }
+    //     if (g.hasMorph())
+    //     {
+    //         for (int i = 0; i < size / 2; i++)
+    //         {
+    //             auto [x, y] = g.interpolateVertex(i, alpha);
+    //             drawPoints.push_back(x);
+    //             drawPoints.push_back(y);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         drawPoints.assign(g.points.begin(), g.points.begin() + size);
+    //     }
+    //     app->refreshOpenGL(drawPoints, 0, drawPoints.size());
+    //     // app->refreshOpenGL(g.points, 0, size);
+    //     glLineWidth(2.5f);
+    //     GraphColor *c = g.getColor();
+    //     app->setColor(c->RED, c->GREEN, c->BLUE);
+    //     glDrawArrays(GL_LINE_STRIP, 0, size / 2);
+    // }
+
+    for (auto &g : graphs)
+    {
+        if (tick < g.getStartTime())
             continue;
-        int tt = (tick - g.getStartTime()) % (int)(g.getDuration() + g.getDelay()) + 1;
-        int size = std::min(g.getSize(), g.getRangeSize() * tt);
-        if(size == g.getSize()){
-            if(tick - g.getStartTime() - g.getDuration() + 1 == g.getDelay())
+
+        int localTick = (tick - g.getStartTime()) % (int)(g.getTotalDuration()) + 1;
+        int drawEnd = g.getDuration();
+        int morphEnd = g.getDuration() + g.getMorphDuration();
+        int totalEnd = g.getTotalDuration();
+
+        std::vector<float> drawPoints;
+        drawPoints.reserve(g.getSize());
+
+        if (localTick < drawEnd)
+        {
+            // --- Draw phase ---
+            int size = std::min(g.getSize(), g.getRangeSize() * localTick);
+            drawPoints.assign(g.points.begin(), g.points.begin() + size);
+        }
+        else if (localTick < morphEnd && g.hasMorph())
+        {
+            // --- Morph phase ---
+            float alpha = float(localTick - drawEnd) / g.morphDuration;
+            for (int i = 0; i < g.getSize() / 2; i++)
             {
-                if (g.ANIMATION_MODE == AnimationMode::ONCE_AND_REMOVE)
-                {
-                    g.setRangeSize(0);
-                }
-                else if (g.ANIMATION_MODE == AnimationMode::ONCE_AND_LOOP_BACK)
-                {
-                    g.StartTime((tick + g.getLoopTime() + 1) / 60.0f);
-                }
-                else if(g.ANIMATION_MODE == AnimationMode::ONCE){
-                    g.setRangeSize(g.getSize());
-                }
-                
+                auto [x, y] = g.interpolateVertex(i, alpha);
+                drawPoints.push_back(x);
+                drawPoints.push_back(y);
             }
         }
-        app->refreshOpenGL(g.points, 0, size);
+        else
+        {
+            // --- Hold phase ---
+            if (g.hasMorph())
+                drawPoints = g.morphPoints;
+            else
+                drawPoints = g.points;
+
+            // Handle AnimationMode here
+            if ((localTick + 1) == g.getTotalDuration())
+            {
+                switch (g.ANIMATION_MODE)
+                {
+                case AnimationMode::ONCE_AND_REMOVE:
+                    g.setRangeSize(0); // hide graph
+                    break;
+                case AnimationMode::ONCE_AND_LOOP_BACK:
+                    g.StartTime((tick + g.loopTime + 1) / 60.0f);
+                    break;
+                case AnimationMode::ONCE:
+                case AnimationMode::INFINITE:
+                default:
+                    break;
+                }
+            }
+        }
+
+        app->refreshOpenGL(drawPoints, 0, drawPoints.size());
         glLineWidth(2.5f);
         GraphColor *c = g.getColor();
         app->setColor(c->RED, c->GREEN, c->BLUE);
-        glDrawArrays(GL_LINE_STRIP, 0, size / 2);
+        glDrawArrays(GL_LINE_STRIP, 0, drawPoints.size() / 2);
     }
+
     shader->setVec2("position", 1.0f, 1.0f);
     shader->setVec2("translate", 0.0f, 0.0f);
     app->setColor(0.40f, 0.40f, 0.70f);
     shader->setVec2("translate", 0.0f, 0.0f);
     shader->setVec2("position", 1.0f, 1.0f);
     drawBox();
+}
+
+void Graph::morph(int index1, int index2){
+    if(index1 < 0 || index1 > graphs.size() || index2 < 0 || index2 > graphs.size()){
+        std::cerr<<"Invalid graph index!"<<std::endl;
+        return;
+    }
+    else{
+        graphs[index1].setMorphPoints(graphs[index2].points);
+    }
 }
 
 Graph *Graph::getInstance(float speed)

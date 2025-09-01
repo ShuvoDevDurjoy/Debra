@@ -7,7 +7,7 @@ template <typename... T>
 void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
 {
     GraphColor *gc = new GraphColor();
-    singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime());
+    singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime(), getMorphDuration());
     graph.setColor(gc);
     graph.setAnimationMode(Graph::ANIMATION_MODE);
     Var v;
@@ -37,7 +37,7 @@ void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
         y = normalizeY(y);
         graph.add({x, y});
     }
-    int cr = 2.01f * ((steps + 2.01f) / 0.01f) / getDuration();
+    int cr = 2.01f * ((steps + 2.01f) / 0.01f) / (getDuration() == 0? 1: getDuration());
     graph.setRangeSize(cr);
     graphs.push_back(graph);
 }
@@ -46,7 +46,7 @@ template <typename... T>
 void Graph::insertVerticesRadians(RadianFunctionTypeVariant fn, float s, float f, T... t)
 {
     GraphColor *gc = new GraphColor();
-    singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime());
+    singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime(), getMorphDuration());
     graph.setColor(gc);
     graph.setAnimationMode(Graph::ANIMATION_MODE);
     Var v;
@@ -76,7 +76,7 @@ void Graph::insertVerticesRadians(RadianFunctionTypeVariant fn, float s, float f
         float y = normalizeY(radius * sin(i));
         graph.add({x, y});
     }
-    int radianSteps = 2 * (((f * M_PI - s * M_PI + 1.0f ) / step ) / getDuration());
+    int radianSteps = 2 * (((f * M_PI - s * M_PI + 1.0f ) / step ) / (getDuration() == 0? 1: getDuration()));
     radianSteps = radianSteps < 1 ? 1 : radianSteps;
     graph.setRangeSize(radianSteps);
     graphs.push_back(graph);
@@ -104,7 +104,7 @@ template <typename... T>
 void Graph::insertVerticesParametric(ParametricFunctionTypeVariant fn, float minRange, float maxRange, T... t)
 {
     GraphColor *gc = new GraphColor();
-    singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime());
+    singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime(), getMorphDuration());
     graph.setColor(gc);
     graph.setAnimationMode(Graph::ANIMATION_MODE);
     Var v;
@@ -134,7 +134,7 @@ void Graph::insertVerticesParametric(ParametricFunctionTypeVariant fn, float min
         graph.add({x, y});
     }
 
-    int parametricSteps = 2.0f * (((maxRange * M_PI - minRange * M_PI + 1.0f) / step ) / (getDuration()));
+    int parametricSteps = 2.0f * (((maxRange * M_PI - minRange * M_PI + 1.0f) / step ) / (getDuration()==0?1:getDuration()));
     parametricSteps = parametricSteps < 1 ? 1 : parametricSteps;
     graph.setRangeSize(parametricSteps);
     graphs.push_back(graph);

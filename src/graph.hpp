@@ -170,25 +170,45 @@ struct singletonGraph
 private:
     GraphColor *color;
     std::vector<float> points;
+    std::vector<float> morphPoints;
     int rangeSize;
     int startTime = 0;
     int duration = 60;
+    int morphDuration = 0;
     int delay = 60;
     int loopTime = 60;
 
 public:
     AnimationMode ANIMATION_MODE = AnimationMode::INFINITE;
+    void setMorphPoints(const std::vector<float> &target)
+    {
+        morphPoints = target;
+        if (morphPoints.size() != points.size())
+        {
+            std::cerr << "Morph points size mismatch!\n";
+        }
+    }
+    bool hasMorph() const { return !morphPoints.empty(); }
+
+    std::pair<float, float> interpolateVertex(int idx, float alpha) const
+    {
+        float x1 = points[2 * idx], y1 = points[2 * idx + 1];
+        float x2 = morphPoints[2 * idx], y2 = morphPoints[2 * idx + 1];
+        return {(1.0f - alpha) * x1 + alpha * x2,
+                (1.0f - alpha) * y1 + alpha * y2};
+    }
 
 private:
     friend class Graph;
 
 public:
     singletonGraph() {}
-    singletonGraph(int startTime, int duration, int delay, int loopTime){
+    singletonGraph(int startTime, int duration, int delay, int loopTime, int morphDuration){
         this->startTime = startTime;
         this->duration = duration;
         this->delay = delay;
         this->loopTime = loopTime;
+        this->morphDuration = morphDuration;
     }
     int getSize()
     {
@@ -227,7 +247,7 @@ public:
     }
     void Duration(float duration)
     {
-        int d = (duration * 60.0f) < 60 ? 60 : (duration * 60.0f);
+        int d = (duration * 60.0f) < 0 ? 0 : (duration * 60.0f);
         this->duration = d;
     }
     void Delay(float delay)
@@ -240,6 +260,8 @@ public:
     int getDuration() { return this->duration; }
     int getDelay() { return this->delay; }
     int getLoopTime() { return this->loopTime; }
+    int getMorphDuration() { return this->morphDuration; }
+    int getTotalDuration() { return this->duration + this->morphDuration + this->delay; }
 };
 
 class Graph : public KeyClicked
@@ -296,7 +318,7 @@ private:
     float yratio = GraphUtilities::DEFAULT_YRATIO;
     int steps;
 
-    int startTime = 0, duration = 60, delay = 60, loopTime = 60;
+    int startTime = 0, duration = 60, delay = 60, loopTime = 60, morphDuration = 0;
 
     AnimationMode ANIMATION_MODE = AnimationMode::INFINITE;
 
@@ -336,6 +358,7 @@ private:
     int getDuration() { return this->duration; }
     int getDelay() { return this->delay; }
     int getLoopTime() { return this->loopTime; }
+    int getMorphDuration() { return this->morphDuration; }
 
 public:
     // --- Singleton Access Point ---
@@ -356,6 +379,8 @@ public:
     template <typename... T>
     void insertVerticesParametricList(ParametricFunctionList, float = 0.0f, float = 4.0f, T...);
 
+    void morph(int, int);
+
     void setAnimationMode(AnimationMode M){
         ANIMATION_MODE = M;
     }
@@ -368,7 +393,7 @@ public:
         this->startTime = start; 
     }
     void Duration(float duration){
-        int d = (duration * 60.0f) < 60 ? 60 : (duration * 60.0f);
+        int d = (duration * 60.0f) < 0 ? 0 : (duration * 60.0f);
         this->duration = d;
     }
     void Delay(float delay){
@@ -378,6 +403,10 @@ public:
     void LoopTime(float loopTime){
         int lt = (loopTime * 60.0f) < 0.0f ? 0 : (loopTime * 60.0f);
         this->loopTime = lt;
+    }
+    void MorphDuration(float t){
+        int tt = (t * 60.0f) < 0.0f ? 0 : (t * 60.0f);
+        this->morphDuration = tt;
     }
 };
 #include "graph.tpp"
