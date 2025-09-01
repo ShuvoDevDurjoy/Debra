@@ -302,51 +302,6 @@ void Graph::draw(int tick)
 
     shader->setVec2("position", scale, scale);
     shader->setVec2("translate", panOffsetX * scale * unitX, panOffsetY * scale * unitY);
-    // for(auto &g: graphs){
-    //     if(tick < g.getStartTime())
-    //         continue;
-    //     int tt = (tick - g.getStartTime()) % (int)(g.getDuration() + g.getDelay()) + 1;
-    //     float alpha = std::clamp((float)(tick - g.getStartTime()) / g.getDuration(), 0.0f, 1.0f);
-    //     int size = std::min(g.getSize(), g.getRangeSize() * tt);
-    //     std::vector<float> drawPoints;
-    //     drawPoints.reserve(size);
-    //     if(size == g.getSize()){
-    //         if(tick - g.getStartTime() - g.getDuration() + 1 == g.getDelay())
-    //         {
-    //             if (g.ANIMATION_MODE == AnimationMode::ONCE_AND_REMOVE)
-    //             {
-    //                 g.setRangeSize(0);
-    //             }
-    //             else if (g.ANIMATION_MODE == AnimationMode::ONCE_AND_LOOP_BACK)
-    //             {
-    //                 g.StartTime((tick + g.getLoopTime() + 1) / 60.0f);
-    //             }
-    //             else if(g.ANIMATION_MODE == AnimationMode::ONCE){
-    //                 g.setRangeSize(g.getSize());
-    //             }
-
-    //         }
-    //     }
-    //     if (g.hasMorph())
-    //     {
-    //         for (int i = 0; i < size / 2; i++)
-    //         {
-    //             auto [x, y] = g.interpolateVertex(i, alpha);
-    //             drawPoints.push_back(x);
-    //             drawPoints.push_back(y);
-    //         }
-    //     }
-    //     else
-    //     {
-    //         drawPoints.assign(g.points.begin(), g.points.begin() + size);
-    //     }
-    //     app->refreshOpenGL(drawPoints, 0, drawPoints.size());
-    //     // app->refreshOpenGL(g.points, 0, size);
-    //     glLineWidth(2.5f);
-    //     GraphColor *c = g.getColor();
-    //     app->setColor(c->RED, c->GREEN, c->BLUE);
-    //     glDrawArrays(GL_LINE_STRIP, 0, size / 2);
-    // }
 
     for (auto &g : graphs)
     {
@@ -356,7 +311,6 @@ void Graph::draw(int tick)
         int localTick = (tick - g.getStartTime()) % (int)(g.getTotalDuration()) + 1;
         int drawEnd = g.getDuration();
         int morphEnd = g.getDuration() + g.getMorphDuration();
-        int totalEnd = g.getTotalDuration();
 
         std::vector<float> drawPoints;
         drawPoints.reserve(g.getSize());
@@ -421,7 +375,7 @@ void Graph::draw(int tick)
 }
 
 void Graph::morph(int index1, int index2){
-    if(index1 < 0 || index1 > graphs.size() || index2 < 0 || index2 > graphs.size()){
+    if(index1 < 0 || index1 > (int)graphs.size() || index2 < 0 || index2 > (int)graphs.size()){
         std::cerr<<"Invalid graph index!"<<std::endl;
         return;
     }
