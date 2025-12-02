@@ -40,7 +40,6 @@ void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
         graph.add({x, y});
     }
     int cr = graph.getSize() / (getDuration() == 0 ? 1 : getDuration());
-    std::cout << "Range size is: " << cr << std::endl;
     cr = cr < 1 ? 1 : cr;
     graph.setRangeSize(cr);
     graphs.push_back(graph);
