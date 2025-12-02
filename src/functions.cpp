@@ -54,13 +54,13 @@ public:
         return sin(7.0f * x) + cos(3.0f * x);
     }
 
-    static std::pair<float, float> spirograph(float t)
+    static std::pair<float, float> spirograph(float t, Var v)
     {
-        float R = 5.0f, r = 1.0f, d = 3.0f;
+        float R = v[1], r = v[2], d = 3.0f;
         float k = (R + r) / r;
         float x = (R + r) * cos(t) - d * cos(k * t);
         float y = (R + r) * sin(t) - d * sin(k * t);
-        return {x * 0.5f, y * 0.5f}; // scale down
+        return {x * 0.5f + v[0], y * 0.5f}; // scale down
     }
 
     static std::pair<float, float> superformula(float theta)
@@ -80,8 +80,8 @@ public:
     static std::pair<float, float> maurerRose(float t, Var v)
     {
         float k = v[0]; // petal factor
-        float r = sin(k * t);
-        float x = r * cos(t);
+        float r = v[1] * sin(k * t);
+        float x = r * cos(t) + v[2];
         float y = r * sin(t);
         return {x, y};
     }
@@ -103,15 +103,15 @@ public:
 
     static std::pair<float, float> heartCurve(float t, Var v)
     {
-        float x = 16 * pow(sin(t), 3);
-        float y = 13 * cos(t) - 5 * cos(2 * t) - 2 * cos(3 * t) - cos(4 * t);
+        float x = v[1] + 16 * pow(sin(t), 3);
+        float y = v[2] + 13 * cos(t) - 5 * cos(2 * t) - 2 * cos(3 * t) - cos(4 * t);
         return {x * v[0], y * v[0]};
     }
 
-    static std::pair<float, float> lissajous(float t)
+    static std::pair<float, float> lissajous(float t, Var v)
     {
-        float A = 1.0f, B = 1.0f, a = 3.0f, b = 2.0f, delta = M_PI / 2;
-        float x = A * sin(a * t + delta);
+        float A = 5.0f, B = 5.0f, a = 3.0f, b = 2.0f, delta = M_PI / 2;
+        float x = A * sin(a * t + delta) + v[0];
         float y = B * sin(b * t);
         return {x, y};
     }
@@ -148,9 +148,9 @@ public:
         return {x * scale, y * scale};
     }
 
-    static float explodedTrigFusion(float x)
+    static float explodedTrigFusion(float x, Var v)
     {
-        return 10.0f * (sin(x * sin(3 * x)) + cos(x * cos(5 * x))) * exp(cos(x)) * tan(sin(x * 2.0f)) * 0.05f;
+        return v[0] * (sin(x * sin(3 * x)) + cos(x * cos(5 * x))) * exp(cos(x)) * tan(sin(x * 2.0f)) * v[1];
     }
     static float explodedTrigFusion2(float x)
     {
@@ -165,7 +165,7 @@ public:
     {
         float x = sin(t) * cos(3 * t) + cos(t * t);
         float y = cos(t) * sin(5 * t) - sin(t * t);
-        return {x * v[0], y * v[0]};
+        return {x * v[0] + v[2], y * v[0]};
     }
 
     static std::pair<float, float> spikeSpiral(float t)

@@ -50,3 +50,29 @@ make clean
 ```
 
 
+## How to Use 
+
+
+- **Keyboard Shortcuts**:
+    
+    - Home: Reset the graph view to the initial state.
+    - Equal: Zoom in on the graph.
+    - Minus: Zoom out of the graph.
+    - F11: Toggle fullscreen mode.
+    - Arrow Keys: Pan the graph view.
+        - Left: Pan left.
+        - Right: Pan right.
+        - Up: Pan up.
+        - Down: Pan down.
+        - Escape: Exit the application.
+
+### Initialization
+```
+/* 
+**One instance of the graph is allowed per application
+**Calling the function more than once will result in the failure of the application
+*/
+Graph *graph = Graph::getInstance(1.0f); 
+```
+## Adding Graph Functions
+### Addding Cartesian Function

@@ -13,12 +13,12 @@ void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
     Var v;
     addToVar(v, t...);
     float i;
-    int count = 0;
-    for (i = -(steps / 2.0f) - 1.0f; i <= (steps / 2.0f) + 1.0f; i += 0.01f)
+    float from = round((-(stepsx / 2.0f) - 1.0f) * 100.0f) / 100.0f;
+    float to = round(((stepsx / 2.0f) + 1.0f) * 100.0f) / 100.0f;
+    for (i = from; i <= to; i = round((i + 0.05f) * 100.0f) / 100.0f)
     {
         float x = normalizeX(i);
         float y;
-        count++;
         std::visit([&](auto &&fn_inner)
                    {
             using FnType = std::decay_t<decltype(fn_inner)>;
@@ -35,9 +35,13 @@ void Graph::insertVertices(CartisanFunctionTypeVariant fn, T... t)
                 static_assert(false, "Function must be callable with float or (float, Var)");
             } }, fn);
         y = normalizeY(y);
+        y = y > 1.0f ? 1.0f : y < -1.0f ? -1.0f
+                                        : y;
         graph.add({x, y});
     }
-    int cr = 2.01f * ((steps + 2.01f) / 0.01f) / (getDuration() == 0? 1: getDuration());
+    int cr = graph.getSize() / (getDuration() == 0 ? 1 : getDuration());
+    std::cout << "Range size is: " << cr << std::endl;
+    cr = cr < 1 ? 1 : cr;
     graph.setRangeSize(cr);
     graphs.push_back(graph);
 }
@@ -51,7 +55,7 @@ void Graph::insertVerticesRadians(RadianFunctionTypeVariant fn, float s, float f
     graph.setAnimationMode(Graph::ANIMATION_MODE);
     Var v;
     addToVar(v, t...);
-    float step = GraphUtilities::toRadians(0.010f);
+    float step = GraphUtilities::toRadians(1.0f);
     for (float i = s * M_PI; i <= f * M_PI; i += step)
     {
         float radius;
@@ -76,7 +80,7 @@ void Graph::insertVerticesRadians(RadianFunctionTypeVariant fn, float s, float f
         float y = normalizeY(radius * sin(i));
         graph.add({x, y});
     }
-    int radianSteps = 2 * (((f * M_PI - s * M_PI + 1.0f ) / step ) / (getDuration() == 0? 1: getDuration()));
+    int radianSteps = graph.getSize() / (getDuration() == 0 ? 60  : getDuration());
     radianSteps = radianSteps < 1 ? 1 : radianSteps;
     graph.setRangeSize(radianSteps);
     graphs.push_back(graph);
@@ -110,7 +114,7 @@ void Graph::insertVerticesParametric(ParametricFunctionTypeVariant fn, float min
     Var v;
     addToVar(v, t...);
 
-    float step = 0.001f;
+    float step = 0.01f;
     for (float t = minRange * M_PI; t <= maxRange * M_PI; t += step)
     {
         std::pair<float, float> pt;
@@ -134,7 +138,7 @@ void Graph::insertVerticesParametric(ParametricFunctionTypeVariant fn, float min
         graph.add({x, y});
     }
 
-    int parametricSteps = 2.0f * (((maxRange * M_PI - minRange * M_PI + 1.0f) / step ) / (getDuration()==0?1:getDuration()));
+    int parametricSteps = graph.getSize() / (getDuration() == 0 ? 1 : getDuration());
     parametricSteps = parametricSteps < 1 ? 1 : parametricSteps;
     graph.setRangeSize(parametricSteps);
     graphs.push_back(graph);

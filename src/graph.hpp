@@ -185,6 +185,7 @@ public:
         morphPoints = target;
         if (morphPoints.size() != points.size())
         {
+            std::cout<<"Size is: "<<morphPoints.size()<<" and "<<points.size()<<std::endl;
             std::cerr << "Morph points size mismatch!\n";
         }
     }
@@ -242,17 +243,17 @@ public:
 
     void StartTime(float startTime)
     {
-        int start = (startTime * 60.0f) < 0 ? 0 : (startTime * 60.0f);
+        int start = (startTime * 60.0f) < 0.0f ? 0.0f : (startTime * 60.0f);
         this->startTime = start;
     }
     void Duration(float duration)
     {
-        int d = (duration * 60.0f) < 0 ? 0 : (duration * 60.0f);
+        int d = (duration * 60.0f) < 0.0f ? 0.0f : (duration * 60.0f);
         this->duration = d;
     }
     void Delay(float delay)
     {
-        int d = (delay * 60.0f) < 60.0f ? 60 : (delay * 60.0f);
+        int d = (delay * 60.0f) < 60.0f ? 60.0f : (delay * 60.0f);
         this->delay = d;
     }
 
@@ -260,8 +261,8 @@ public:
     int getDuration() { return this->duration; }
     int getDelay() { return this->delay; }
     int getLoopTime() { return this->loopTime; }
-    int getMorphDuration() { return this->morphDuration; }
-    int getTotalDuration() { return this->duration + this->morphDuration + this->delay; }
+    int getMorphDuration() { return hasMorph()?this->morphDuration:0; }
+    int getTotalDuration() { return getDuration() + getMorphDuration() + this->delay; }
 };
 
 class Graph : public KeyClicked
@@ -316,9 +317,10 @@ private:
     float pixel_per_unit = GraphUtilities::DEFAULT_PIXEL_PER_UNIT;
     float panOffsetX = GraphUtilities::DEFAULT_PAN_X_OFFSET, panOffsetY = GraphUtilities::DEFAULT_PAN_Y_OFFSET;
     float yratio = GraphUtilities::DEFAULT_YRATIO;
-    int steps;
+    int stepsx;
+    int stepsy;
 
-    int startTime = 0, duration = 60, delay = 60, loopTime = 60, morphDuration = 0;
+    int startTime = 0, duration = 60, delay = 60, loopTime = 0, morphDuration = 0;
 
     AnimationMode ANIMATION_MODE = AnimationMode::INFINITE;
 
@@ -378,6 +380,8 @@ public:
     void insertVerticesParametric(ParametricFunctionTypeVariant, float = 0.0f, float = 4.0f, T...);
     template <typename... T>
     void insertVerticesParametricList(ParametricFunctionList, float = 0.0f, float = 4.0f, T...);
+    void drawLines(std::vector<std::pair<float, float>>, GraphColor *graph_color = new GraphColor());
+    void drawPoints(float, float, float = 0.5f, GraphColor* = new GraphColor());
 
     void morph(int, int);
 
@@ -408,6 +412,7 @@ public:
         int tt = (t * 60.0f) < 0.0f ? 0 : (t * 60.0f);
         this->morphDuration = tt;
     }
+    
 };
 #include "graph.tpp"
 

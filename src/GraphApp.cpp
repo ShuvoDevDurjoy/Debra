@@ -24,7 +24,7 @@ int GraphApp::InitWindow()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+    // glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
     // create window
     window = glfwCreateWindow(window_width, window_height, "Shuvo Dev Durjoy", nullptr, nullptr);
@@ -78,7 +78,7 @@ void GraphApp::mainLoop(Graph *graph)
 {
     int count = -1;
     double lastTickTime = 0.0;
-    const double tickInterval = 0.001; // 100 ms
+    const double tickInterval = 0.0167; // 100 ms
     while (!glfwWindowShouldClose(window))
     {
         process_input();

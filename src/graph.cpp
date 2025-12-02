@@ -11,7 +11,7 @@ namespace GraphUtilities
     float DEFAULT_PAN_Y_OFFSET = 0.0f;
     float DEFAULT_PAN_X_OFFSET = 0.0f;
     float MAX_PIXEL_PER_UNIT = 400.0f;
-    float MIN_PIXEL_PER_UNIT = 20.0f;
+    float MIN_PIXEL_PER_UNIT = 50.0f;
     float PIXEL_INCREMENT_STEP = 5.0f;
     float DEFAULT_PAN_INCREMENT_STEP = 1.0f;
     int DEFAULT_STEPS = 10.0f;
@@ -65,14 +65,12 @@ Graph::Graph(float s)
     this->prevHeight = windowHeight;
     this->prevWidth = windowWidth;
 
-    this->steps = (windowWidth / GraphUtilities::MIN_PIXEL_PER_UNIT);
+    this->stepsx = windowWidth / (s * 1.0f);
+    this->stepsy = windowHeight / (s * 1.0f);
 
     this->unitX = normalizeX(1.0f);
     this->unitY = normalizeY(1.0f);
     this->speed = s <= 0.0f ? 0 : s * 60.0f;
-
-    this->cartisanReset = 2.01f * ((steps + 2.01f) / 0.01f) / (speed);
-    this->radiaReset = ((GraphUtilities::toRadians(360.0f) / GraphUtilities::toRadians(0.01f))) / (speed);
 
     initBox();
     generateGrid();
@@ -89,14 +87,14 @@ void Graph::frame_size_buffer_callback(GLFWwindow *window, int width, int height
 void Graph::initBox()
 {
     boxVerticess.setColor(new GraphColor(0.40f, 0.40f, 0.70f));
-    boxVerticess.add({-0.997f, -0.997f});
-    boxVerticess.add({0.997f, -0.997f});
-    boxVerticess.add({0.997f, -0.997f});
-    boxVerticess.add({0.997f, 0.997f});
-    boxVerticess.add({0.997f, 0.997f});
-    boxVerticess.add({-0.997f, 0.997f});
-    boxVerticess.add({-0.997f, 0.997f});
-    boxVerticess.add({-0.997f, -0.997f});
+    boxVerticess.add({-1.0f, -1.0f});
+    boxVerticess.add({ 1.0f, -1.0f});
+    boxVerticess.add({ 1.0f, -1.0f});
+    boxVerticess.add({ 1.0f,  1.0f});
+    boxVerticess.add({ 1.0f,  1.0f});
+    boxVerticess.add({-1.0f,  1.0f});
+    boxVerticess.add({-1.0f,  1.0f});
+    boxVerticess.add({-1.0f, -1.0f});
     boxVerticess.setRangeSize(boxVerticess.getSize());
 }
 
@@ -139,22 +137,22 @@ void Graph::toggleFullscreen()
 inline float Graph::maxPanXX() const
 {
     //  (steps/2) * (scale-1)/scale   →  0 when scale==1, grows as you zoom‑in
-    return (steps * 0.5f) * (scale - 1.0f) / scale;
+    return (stepsx * 0.5f) * (scale - 1.0f) / scale;
 }
 
 inline float Graph::maxPanYY() const
 {
     // Steps in Y direction are derived from visible vertical units,
     // which depend on aspect ratio and pixel_per_unit.
-    int visibleYUnits = windowHeight / (2.0f * GraphUtilities::MIN_PIXEL_PER_UNIT);
-    return visibleYUnits * (scale - 1.0f) / scale;
+    // int visibleYUnits = windowHeight / (2.0f * GraphUtilities::MIN_PIXEL_PER_UNIT);
+    return (stepsy * 0.5f) * (scale - 1.0f) / scale;
 }
 
 void Graph::onKeyPressedOnceCallback(const KeyEvent &event)
 {
-    float maxPanX = (steps / 2.0f) * (scale - 1.0f);
+    float maxPanX = (stepsx / 2.0f) * (scale - 1.0f);
 
-    float maxPanY = ((windowHeight / GraphUtilities::MIN_PIXEL_PER_UNIT) / 2.0f) * (scale - 1.0f);
+    float maxPanY = (stepsy / 2.0f) * (scale - 1.0f);
 
     switch (event.key)
     {
@@ -218,13 +216,12 @@ void Graph::generateGrid()
 {
 
     gridLines.setColor(new GraphColor(0.12f, 0.13f, 0.25f));
-    for (int x = -steps / 2; x <= steps / 2; x += 1)
+    for (int x = -stepsx / 2; x <= stepsx / 2; x += 1)
     {
         gridLines.add({normalizeX(x), 1.0f});
         gridLines.add({normalizeX(x), -1.0f});
     }
-    float stepy = windowHeight / GraphUtilities::MIN_PIXEL_PER_UNIT;
-    for (int y = -stepy / 2; y <= stepy / 2; y += 1)
+    for (int y = -stepsy / 2; y <= stepsy / 2; y += 1)
     {
         gridLines.add({-1.0f, normalizeY(y)});
         gridLines.add({1.0f, normalizeY(y)});
@@ -234,12 +231,12 @@ void Graph::generateGrid()
 
 float Graph::normalizeX(float x)
 {
-    return (x * 2.0f) / steps;
+    return (x * 2.0f) / (stepsx * 1.0f);
 }
 
 float Graph::normalizeY(float y)
 {
-    return (2.0f * y) / (windowHeight / GraphUtilities::MIN_PIXEL_PER_UNIT);
+    return (y * 2.0f) / (stepsy * 1.0f);
 }
 
 void Graph::drawBox()
@@ -247,7 +244,7 @@ void Graph::drawBox()
     GraphColor *gc = boxVerticess.getColor();
     app->setColor(gc->RED, gc->GREEN, gc->BLUE);
     app->refreshOpenGL(boxVerticess.points, 0, boxVerticess.getSize());
-    glLineWidth(4.0f);
+    glLineWidth(6.0f);
     glDrawArrays(GL_LINES, 0, boxVerticess.getSize() / 2);
 }
 
@@ -292,6 +289,96 @@ void Graph::drawAxis()
     glDrawArrays(GL_LINES, 0, axisfixed.size() / 2);
 }
 
+void Graph::drawLines(std::vector<std::pair<float, float>> vertices, GraphColor *graph_color)
+{
+    GraphColor *gc = graph_color;
+    singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime(), getMorphDuration());
+    graph.setColor(gc);
+    graph.setAnimationMode(Graph::ANIMATION_MODE);
+    int vertices_size = vertices.size();
+    float x = Graph::normalizeX(vertices[0].first);
+    float y = Graph::normalizeY(vertices[0].second);
+    graph.add({x, y});
+    float steps = 0.01f;
+    for(int i = 1; i < vertices_size; ++i){
+        std::pair<float, float> previous = vertices[i - 1];
+        std::pair<float, float> current = vertices[i];
+
+        float slope = (previous.first - current.first) == 0 ? 1.0f : ((previous.second - current.second) / (previous.first - current.first));
+        steps = (abs(current.first - previous.first)) / 100.0f;
+        steps = steps == 0? 1.0f: steps;
+        // std::cout << "Step size is: " << steps << std::endl;
+        // std::cout << "Slope is: " << slope << std::endl;
+        float c = 0.0f;
+        if(previous.first < current.first)
+        {
+            if( current.first < 0.0f){
+                c = (-1.0f * current.first * slope) + current.second;
+            }
+            else{
+                c = (-1.0f * previous.first * slope) + previous.second;
+            }
+            // std::cout << "y interseption is: " << c << std::endl;
+            // std::cout << "previous y is: " << normalizeY(previous.second)<< " and : "<<previous.second << std::endl;
+            for (float a = previous.first; a <= current.first; a = round((a + steps) * 100.0f) / 100.0f)
+            {
+                float x = normalizeX(a);
+                float y = normalizeY(slope * a) + normalizeY(c);
+                // std::cout << " y is: " << y << std::endl;
+                graph.add({x, y});
+            }
+        }
+        else {
+            if (previous.first < 0.0f)
+            {
+                c = (-1.0f * previous.first * slope) + previous.second;
+            }
+            else
+            {
+                c = (-1.0f * current.first * slope) + current.second;
+            }
+            // std::cout << "y interseption is: " << c << std::endl;
+            // std::cout << "previous y is: " << normalizeY(previous.second) << " and : "<<previous.second<< std::endl;
+            for (float a = previous.first; a >= current.first; a = round((a - steps) * 100.0f) / 100.0f)
+            {
+                float x = normalizeX(a);
+                float y = normalizeY(slope * a) + normalizeY(c);
+                // std::cout << " y is: " << y << std::endl;
+                graph.add({x, y});
+            }
+        }
+    }
+    int cr = graph.getSize() / (getDuration() == 0 ? 60 : (getDuration() - 60 == 0 ? 60 : getDuration() - 60));
+    cr = cr < 1 ? 1 : cr;
+    graph.setRangeSize(cr);
+    graphs.push_back(graph);
+}
+
+void Graph::drawPoints(float x, float y, float radius, GraphColor* g_color){
+    GraphColor *gc = g_color;
+    singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime(), getMorphDuration());
+    graph.setColor(gc);
+    graph.setAnimationMode(Graph::ANIMATION_MODE);
+    float step = GraphUtilities::toRadians(0.1f);
+    float centerX = normalizeX(x);
+    float centerY = normalizeY(y);
+    float to = round(2.0f * M_PI * 100.0f) / 100.0f;
+
+    float prevI = -1.0f;
+    for (float i = 0.0f; i <= to && i != prevI; i = round((i + step) * 1000.0f) / 1000.0f)
+    {
+        graph.add({centerX, centerY});
+        float posX = normalizeX(x + radius * cos(i));
+        float posY = normalizeY(y + radius * sin(i));
+        graph.add({posX, posY});
+        prevI = i;
+    }
+    int radianSteps = graph.getSize() / (getDuration() == 0 ? 60 : (getDuration() - 60 == 0 ? 60 : getDuration() - 60));
+    radianSteps = radianSteps < 1 ? 1 : radianSteps;
+    graph.setRangeSize(radianSteps);
+    graphs.push_back(graph);
+}
+
 void Graph::draw(int tick)
 {
     glEnable(GL_BLEND);
@@ -303,22 +390,29 @@ void Graph::draw(int tick)
     shader->setVec2("position", scale, scale);
     shader->setVec2("translate", panOffsetX * scale * unitX, panOffsetY * scale * unitY);
 
+    int beginIndex = -1, endIndex = -1;
+
     for (auto &g : graphs)
     {
         if (tick < g.getStartTime())
-            continue;
-
+        continue;
+        if(g.getRangeSize() == 0)
+        continue;
+        
         int localTick = (tick - g.getStartTime()) % (int)(g.getTotalDuration()) + 1;
-        int drawEnd = g.getDuration();
-        int morphEnd = g.getDuration() + g.getMorphDuration();
-
+        int drawEnd = g.getDuration() + 1;
+        int morphEnd = g.getDuration() + g.getMorphDuration() + 1;
+        
         std::vector<float> drawPoints;
-        drawPoints.reserve(g.getSize());
+
 
         if (localTick < drawEnd)
         {
             // --- Draw phase ---
             int size = std::min(g.getSize(), g.getRangeSize() * localTick);
+            beginIndex = 0;
+            endIndex = size;
+            drawPoints.reserve(size);
             drawPoints.assign(g.points.begin(), g.points.begin() + size);
         }
         else if (localTick < morphEnd && g.hasMorph())
@@ -346,24 +440,26 @@ void Graph::draw(int tick)
                 switch (g.ANIMATION_MODE)
                 {
                 case AnimationMode::ONCE_AND_REMOVE:
-                    g.setRangeSize(0); // hide graph
+                    g.setRangeSize(0); 
                     break;
                 case AnimationMode::ONCE_AND_LOOP_BACK:
                     g.StartTime((tick + g.loopTime + 1) / 60.0f);
                     break;
                 case AnimationMode::ONCE:
+                    g.setRangeSize(g.getSize());
+                    break;
                 case AnimationMode::INFINITE:
                 default:
                     break;
                 }
             }
         }
-
         app->refreshOpenGL(drawPoints, 0, drawPoints.size());
         glLineWidth(2.5f);
         GraphColor *c = g.getColor();
         app->setColor(c->RED, c->GREEN, c->BLUE);
         glDrawArrays(GL_LINE_STRIP, 0, drawPoints.size() / 2);
+        drawPoints.clear();
     }
 
     shader->setVec2("position", 1.0f, 1.0f);
