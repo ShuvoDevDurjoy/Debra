@@ -86,24 +86,6 @@ void Graph::insertVerticesRadians(RadianFunctionTypeVariant fn, float s, float f
 }
 
 template <typename... T>
-void Graph::insertVerticesList(CartesianFunctionList fns, T... t)
-{
-    for (auto &fn : fns.funcs)
-    {
-        insertVertices(fn, t...);
-    }
-}
-
-template <typename... T>
-void Graph::insertVerticesRadiansList(RadianFunctionList fns, float minRange, float maxRange, T... t)
-{
-    for (auto &fn : fns.funcs)
-    {
-        insertVerticesRadians(fn, minRange, maxRange, t...);
-    }
-}
-
-template <typename... T>
 void Graph::insertVerticesParametric(ParametricFunctionTypeVariant fn, float minRange, float maxRange, T... t)
 {
     GraphColor *gc = new GraphColor();
@@ -141,6 +123,24 @@ void Graph::insertVerticesParametric(ParametricFunctionTypeVariant fn, float min
     parametricSteps = parametricSteps < 1 ? 1 : parametricSteps;
     graph.setRangeSize(parametricSteps);
     graphs.push_back(graph);
+}
+
+template <typename... T>
+void Graph::insertVerticesList(CartesianFunctionList fns, T... t)
+{
+    for (auto &fn : fns.funcs)
+    {
+        insertVertices(fn, t...);
+    }
+}
+
+template <typename... T>
+void Graph::insertVerticesRadiansList(RadianFunctionList fns, float minRange, float maxRange, T... t)
+{
+    for (auto &fn : fns.funcs)
+    {
+        insertVerticesRadians(fn, minRange, maxRange, t...);
+    }
 }
 
 template <typename... T>
