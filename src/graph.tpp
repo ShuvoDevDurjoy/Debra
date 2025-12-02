@@ -95,7 +95,7 @@ void Graph::insertVerticesParametric(ParametricFunctionTypeVariant fn, float min
     Var v;
     addToVar(v, t...);
 
-    float step = 0.01f;
+    float step = GraphUtilities::toRadians(1.0f);
     for (float t = minRange * M_PI; t <= maxRange * M_PI; t += step)
     {
         std::pair<float, float> pt;

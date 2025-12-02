@@ -189,6 +189,35 @@ public:
         return y;
     }
 
+    static std::pair<float, float> graphButterflyParam(float t, Var v)
+    {
+        // scale factor: v[0]
+        float k = v[0];
+
+        float common =
+            exp(sin(t)) -
+            2.0f * cos(4.0f * t) +
+            pow(sin(t / 12.0f), 5.0f);
+
+        float x = k * common * sin(t);
+        float y = k * common * cos(t);
+
+        float xr = -y + v[1];
+        float yr = x + v[2];
+
+        return {xr, yr};
+    }
+
+    static std::pair<float, float> para3Param(float t, Var v)
+    {
+        float x = t;
+
+        float y = v[2] +
+                  v[1] * pow(cos((1.0f - (1.0f / v[0])) * t), 2.0f);
+
+        return {x, y};
+    }
+
     static std::pair<float, float> hypotrocloid(float t)
     {
         float R = 5.0f;

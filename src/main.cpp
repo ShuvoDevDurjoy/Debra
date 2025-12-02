@@ -78,6 +78,33 @@ float fn(float x)
     return y;
 }
 
+static std::pair<float, float> flowerCircle(float t, Var v)
+{
+    float R = v[0]; // base circle radius
+    float A = v[1]; // amplitude of petals
+    float k = v[2]; // number of petals
+
+    float r = R + A * cos(k * t);
+
+    float x = r * cos(t) + v[3];
+    float y = r * sin(t) + v[4];
+
+    return {x, y};
+}
+
+static std::pair<float, float> flowerRose(float t, Var v)
+{
+    float a = v[0]; // size
+    float k = v[1]; // number of petals
+
+    float r = a * cos(k * t);
+
+    float x = r * cos(t) + v[2];
+    float y = r * sin(t) + v[3];
+
+    return {x, y};
+}
+
 void animation1(Graph *graph)
 {
     graph->StartTime(0.0f);
@@ -131,6 +158,35 @@ void animation2(Graph *graph)
     graph->morph(3, 4);
     graph->morph(4, 5);
     graph->morph(5, 0);
+}
+
+void animation3(Graph *graph){
+    float alltime = 3.0f;
+    graph->setAnimationMode(AnimationMode::ONCE_AND_LOOP_BACK);
+    graph->StartTime(0.0f);
+    graph->Duration(alltime);
+    graph->Delay(alltime);
+    graph->MorphDuration(alltime);
+    graph->LoopTime(alltime);
+
+    graph->insertVerticesParametric(Functions::graphButterflyParam, -2.0f, 2.0f, -4.0f, -16.0f, 0.0f);
+    graph->insertVerticesParametric(Functions::graphButterflyParam, -2.0f, 2.0f, -4.0f, 16.0f, 0.0f);
+
+    
+
+    graph->StartTime(2 * alltime);
+    // graph->insertVerticesParametric(flowerRose, 0.0f, 2.0f, 10.0f, 10.0f, 16.0f, 0.0f);
+    // graph->insertVerticesParametric(flowerRose, 0.0f, 2.0f, 10.0f, 10.0f, -16.0f, 0.0f);
+
+    // graph->insertVerticesParametric(flowerCircle, 0.0f, 2.0f, 3.0f, 5.0f, 12.0f, 16.0f, 0.0f);
+    // graph->insertVerticesParametric(flowerCircle, 0.0f, 2.0f, 3.0f, 5.0f, 12.0f, -16.0f, 0.0f);
+
+    graph->insertVerticesParametric(Functions::heartCurve, -2.0f, 2.0f, 0.6f, 30.0f, 3.0f);
+    graph->insertVerticesParametric(Functions::heartCurve, -2.0f, 2.0f, 0.6f, -30.0f, 3.0f);
+    graph->morph(0, 2);
+    graph->morph(1, 3);
+    graph->morph(2, 0);
+    graph->morph(3, 1);
 }
 
 std::pair<float, float> randomly(float t, Var v){
@@ -232,7 +288,7 @@ int main(){
     Graph *graph = Graph::getInstance(20.0f);
 
     graph->setAnimationMode(AnimationMode::ONCE_AND_LOOP_BACK);
-    animation1(graph);
+    animation3(graph);
 
     graph->run();
 }

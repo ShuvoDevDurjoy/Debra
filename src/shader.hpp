@@ -33,6 +33,7 @@ public:
     void setVec2(const std::string&, float, float) const;
     void setVec3(const std::string&, float, float, float) const;
     void setInt(const std::string& , int) const;
+    void setBool(const std::string &, bool) const;
 };
 
 #endif

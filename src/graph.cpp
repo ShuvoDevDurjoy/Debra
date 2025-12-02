@@ -307,8 +307,6 @@ void Graph::drawLines(std::vector<std::pair<float, float>> vertices, GraphColor 
         float slope = (previous.first - current.first) == 0 ? 1.0f : ((previous.second - current.second) / (previous.first - current.first));
         steps = (abs(current.first - previous.first)) / 100.0f;
         steps = steps == 0? 1.0f: steps;
-        // std::cout << "Step size is: " << steps << std::endl;
-        // std::cout << "Slope is: " << slope << std::endl;
         float c = 0.0f;
         if(previous.first < current.first)
         {
@@ -318,13 +316,11 @@ void Graph::drawLines(std::vector<std::pair<float, float>> vertices, GraphColor 
             else{
                 c = (-1.0f * previous.first * slope) + previous.second;
             }
-            // std::cout << "y interseption is: " << c << std::endl;
-            // std::cout << "previous y is: " << normalizeY(previous.second)<< " and : "<<previous.second << std::endl;
+            
             for (float a = previous.first; a <= current.first; a = round((a + steps) * 100.0f) / 100.0f)
             {
                 float x = normalizeX(a);
                 float y = normalizeY(slope * a) + normalizeY(c);
-                // std::cout << " y is: " << y << std::endl;
                 graph.add({x, y});
             }
         }
@@ -337,13 +333,11 @@ void Graph::drawLines(std::vector<std::pair<float, float>> vertices, GraphColor 
             {
                 c = (-1.0f * current.first * slope) + current.second;
             }
-            // std::cout << "y interseption is: " << c << std::endl;
-            // std::cout << "previous y is: " << normalizeY(previous.second) << " and : "<<previous.second<< std::endl;
+          
             for (float a = previous.first; a >= current.first; a = round((a - steps) * 100.0f) / 100.0f)
             {
                 float x = normalizeX(a);
                 float y = normalizeY(slope * a) + normalizeY(c);
-                // std::cout << " y is: " << y << std::endl;
                 graph.add({x, y});
             }
         }
@@ -359,7 +353,7 @@ void Graph::drawPoints(float x, float y, float radius, GraphColor* g_color){
     singletonGraph graph(getStart(), getDuration(), getDelay(), getLoopTime(), getMorphDuration());
     graph.setColor(gc);
     graph.setAnimationMode(Graph::ANIMATION_MODE);
-    float step = GraphUtilities::toRadians(0.1f);
+    float step = GraphUtilities::toRadians(1.0f);
     float centerX = normalizeX(x);
     float centerY = normalizeY(y);
     float to = round(2.0f * M_PI * 100.0f) / 100.0f;
@@ -390,7 +384,6 @@ void Graph::draw(int tick)
     shader->setVec2("position", scale, scale);
     shader->setVec2("translate", panOffsetX * scale * unitX, panOffsetY * scale * unitY);
 
-    int beginIndex = -1, endIndex = -1;
 
     for (auto &g : graphs)
     {
@@ -410,8 +403,6 @@ void Graph::draw(int tick)
         {
             // --- Draw phase ---
             int size = std::min(g.getSize(), g.getRangeSize() * localTick);
-            beginIndex = 0;
-            endIndex = size;
             drawPoints.reserve(size);
             drawPoints.assign(g.points.begin(), g.points.begin() + size);
         }
@@ -462,8 +453,6 @@ void Graph::draw(int tick)
         drawPoints.clear();
     }
 
-    shader->setVec2("position", 1.0f, 1.0f);
-    shader->setVec2("translate", 0.0f, 0.0f);
     app->setColor(0.40f, 0.40f, 0.70f);
     shader->setVec2("translate", 0.0f, 0.0f);
     shader->setVec2("position", 1.0f, 1.0f);
@@ -496,3 +485,4 @@ void Graph::run()
 {
     app->run(instance);
 }
+
